@@ -9,8 +9,6 @@ import shutil
 import zipfile
 import requests
 
-from bs4 import BeautifulSoup
-
 def retrieve_file_paths(dirName):
 	filePaths = []
 	
