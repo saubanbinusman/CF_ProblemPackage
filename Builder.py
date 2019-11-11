@@ -3,6 +3,7 @@
 import os
 import csv
 import sys
+import json
 import random
 import shutil
 import zipfile
@@ -52,31 +53,41 @@ with open("input.csv", "r") as input_csv:
 			
 			dir_sol = dir_main + "/submissions/accepted"
 			os.makedirs(dir_sol, exist_ok=True)
-			
-			soup = BeautifulSoup(requests.get(row[2]).text, "html.parser")
-			
-			with open(dir_sol + "/sol.cpp", "w") as codeFile:
-				codeFile.write(soup.find_all("pre", {"id": "program-source-text"})[0].contents[0])
-			
-			ins = [a.find_all("div", "text") for a in soup.find_all("div", "file input-view")]
-			outs = [a.find_all("div", "text") for a in soup.find_all("div", "file output-view")]
-			
-			assert(len(ins) == len(outs))
-			
+
+			submission_id = row[2][row[2].rindex("/") + 1:]
+
+			session_id = "314BCC085FA3A5660ED6C598FA518048-n1"  # Change with your JSESSIONID cookie
+			csrf_token = "b419345ea7f5e2f3d7037660abe69bfb"  # Change with your csrf token
+
+			submission_api = "https://codeforces.com/data/submitSource"
+			web_header = {
+				"user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:70.0) Gecko/20100101 Firefox/70.0",
+				"accept": "*/*",
+				"Cookie":  "JSESSIONID=" + session_id,
+				"X-Csrf-Token": csrf_token
+			}
+
+			submission_data = requests.post(submission_api, data={ "submissionId": submission_id }, headers=web_header).json()
+
+			test_count = int(submission_data["testCount"])
+
+			ins = [s.replace("\r", "") for s in [submission_data["input#" + str(i)] for i in range(1, test_count + 1)]]
+			outs = [s.replace("\r", "") for s in [submission_data["answer#" + str(i)] for i in range(1, test_count + 1)]]
+
 			i = 1
 			
 			for a, b in zip(ins, outs):
 				with open(dir_tests + "/" + repr(i) + ".in", "w") as inFile:
-					inFile.write(a[0].pre.contents[0])
+					inFile.write(a)
 				
 				with open(dir_tests + "/" + repr(i) + ".ans", "w") as outFile:
-					outFile.write(b[0].pre.contents[0])
+					outFile.write(b)
 				
 				i = i + 1
 			
-			print("Fetched " + str(len(ins)) + " TCs. Zipping ...")
+			print("Fetched " + str(test_count) + " TCs. Zipping ...")
 			
-			files_to_zip = retrieve_file_paths(dir_main);
+			files_to_zip = retrieve_file_paths(dir_main)
 			
 			with zipfile.ZipFile(problem_id + ".zip", "w") as zip_file:
 				for file in files_to_zip:
