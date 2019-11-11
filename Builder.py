@@ -67,6 +67,9 @@ with open("input.csv", "r") as input_csv:
 
 			submission_data = requests.post(submission_api, data={ "submissionId": submission_id }, headers=web_header).json()
 
+			with open(dir_sol + "/sol.cpp", "w") as sol_file:
+				sol_file.write(submission_data["source"])
+
 			test_count = int(submission_data["testCount"])
 
 			ins  = [s.replace("\r", "") for s in [submission_data["input#"  + str(i)] for i in range(1, test_count + 1)]]
