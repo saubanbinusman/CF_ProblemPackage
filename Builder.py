@@ -69,7 +69,7 @@ with open("input.csv", "r") as input_csv:
 
 			test_count = int(submission_data["testCount"])
 
-			ins = [s.replace("\r", "") for s in [submission_data["input#" + str(i)] for i in range(1, test_count + 1)]]
+			ins  = [s.replace("\r", "") for s in [submission_data["input#"  + str(i)] for i in range(1, test_count + 1)]]
 			outs = [s.replace("\r", "") for s in [submission_data["answer#" + str(i)] for i in range(1, test_count + 1)]]
 
 			i = 1
