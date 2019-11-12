@@ -10,7 +10,6 @@ import zipfile
 import requests
 
 class CFService:
-	login_api = "https://codeforces.com/enter"
 	submission_api = "https://codeforces.com/data/submitSource"
 
 	def __init__(self):
