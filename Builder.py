@@ -107,14 +107,25 @@ def main():
 				sol_file.write(ac_source)
 			
 			print( "\t-- Written sol.cpp")
-			
+
+			written_count = 0
+
 			# Write Test Cases to files
 			for tc, inp, ans in zip(range(1, len(inputs) + 1), inputs, answers):
 				with open(F"{dir_tests}/{tc}.in", "w") as inp_file, open(F"{dir_tests}/{tc}.ans", "w") as ans_file:
-					inp_file.write(inp)
-					ans_file.write(ans)
+					# Only Write Test Case to file if it's not truncated					truncate_length = 400
+					truncate_length = 400
+					truncated = (len(inp) > truncate_length and inp[-3:] == "...") or (len(ans) > truncate_length and ans[-3:] == "...")
+					
+					if truncated:
+						print(F"\t-- WARNING: Test Case # {tc} is truncated")
+					
+					else:
+						inp_file.write(inp)
+						ans_file.write(ans)
+						written_count += 1
 			
-			print(F"\t-- Written {len(inputs)} Test Cases")
+			print(F"\t-- Written {written_count}/{len(inputs)} Test Cases ({len(inputs) - written_count} were Truncated, thus not written)")
 
 			# Enlist file paths to be zipped
 			files_to_zip = retrieve_file_paths(dir_top_level)
