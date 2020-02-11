@@ -1,4 +1,6 @@
+# Import OS modules
 import os
+from sys import platform
 import re
 import csv
 import sys
@@ -71,8 +73,8 @@ def main():
 			os.makedirs(dir_top_level, exist_ok=True)
 			
 			# Generate a random color '#xxxxxx' for Problem
-			rnd255 = lambda: random.randint(0,255)
-			color = "#{:02x}{:02x}{:02x}".format(rnd255(), rnd255(), rnd255())
+			r = lambda: random.randint(0,255)
+			color = "#{:02x}{:02x}{:02x}".format(random.randint(0,255), random.randint(0,255), random.randint(0,255))
 			
 			# Write Problem Description file
 			problem_desc = {
@@ -88,7 +90,7 @@ def main():
 				for k, v in problem_desc.items():
 					desc_file.write(F"{k} = {v}\n")
 			
-			print("\t-- Written domjudge-problem.ini")
+			print( "\t-- Written domjudge-problem.ini")
 			
 			# Create Directory for Test Cases
 			dir_tests = F"{dir_top_level}/data/secret"
@@ -100,13 +102,13 @@ def main():
 
 			# Fetch submission data from Codeforces
 			ac_source, inputs, answers = cf_service.get_submission(submission_id)
-			print("\t-- Fetched Submission Details")
+			print( "\t-- Fetched Submission Details")
 
 			# Write AC Solution to file
 			with open(dir_sol + "/sol.cpp", "w") as sol_file:
 				sol_file.write(ac_source)
 			
-			print("\t-- Written sol.cpp")
+			print( "\t-- Written sol.cpp")
 
 			written_count = 0
 
@@ -130,6 +132,15 @@ def main():
 			# Enlist file paths to be zipped
 			files_to_zip = retrieve_file_paths(dir_top_level)
 			
+			# Create directory to store the resulting zip files in
+			dir_path = "./Problems"
+
+			if not os.path.exists(dir_path):
+				print( "Creating folder")
+				os.mkdir(dir_path)
+	
+			problem_id = dir_path + "/" + problem_id
+
 			# Zip files into a problem package
 			with zipfile.ZipFile(problem_id + ".zip", "w") as zip_file:
 				for file in files_to_zip:
@@ -140,10 +151,15 @@ def main():
 			# Remove temporary directory
 			shutil.rmtree(dir_top_level)
 
-			print("\t-- Cleaned Temporary Files")
+			print( "\t-- Cleaned Temporary Files")
 
-			print("\n\tProblem Package Created\n")
+			print( "\n\tProblem Package Created\n")
 
+	if platform == 'linux' or platform == 'linux2':
+		from os import listdir
+		files = [ f for f in listdir('./Problems/')]
+		for file in files:
+			os.chmod('./Problems/' + file, 0o777)
 
 if __name__ == "__main__":
 	main()
