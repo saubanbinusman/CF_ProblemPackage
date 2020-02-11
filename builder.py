@@ -71,8 +71,8 @@ def main():
 			os.makedirs(dir_top_level, exist_ok=True)
 			
 			# Generate a random color '#xxxxxx' for Problem
-			r = lambda: random.randint(0,255)
-			color = "#{:02x}{:02x}{:02x}".format(random.randint(0,255), random.randint(0,255), random.randint(0,255))
+			rnd255 = lambda: random.randint(0,255)
+			color = "#{:02x}{:02x}{:02x}".format(rnd255(), rnd255(), rnd255())
 			
 			# Write Problem Description file
 			problem_desc = {
