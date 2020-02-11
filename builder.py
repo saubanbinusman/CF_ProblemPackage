@@ -25,6 +25,17 @@ class CFService:
 
 
 	def get_submission(self, submission_id):
+		"""
+		Returns a 3-Tuple, that contains:
+		ac_source: Source code of an AC Submission in str format
+		test_inputs: Input Test cases for the problem (list of str)
+		test_answers: Output Test cases for the problem (list of str)
+
+		Each test_inputs entry corresponds to each test_answers entry at same index
+		E.g: test_inputs[i] corresponds to test_answers[i] (for each i)
+		This also implies that len(test_inputs) == len(test_answers)
+		"""
+
 		time.sleep(0.5)  # To avoid flooding the server with requests (in case of long CSV files)
 
 		response = self.session.post(self.submission_api, data={ "submissionId": submission_id, "csrf_token": self.csrf_token }, headers=self.headers).json()
@@ -40,14 +51,11 @@ class CFService:
 
 
 def retrieve_file_paths(dir_name):
-	file_paths = []
-	
-	for root, directories, files in os.walk(dir_name):
-		for filename in files:
-			file_path = os.path.join(root, filename)
-			file_paths.append(file_path)
-	
-	return file_paths
+	"""
+	Returns a list of full paths to all individual files in directory dir_name
+	"""
+	return [os.path.join(root, filename) for root, directories, files in os.walk(dir_name) for filename in files]
+
 
 def main():
 	cf_service = CFService()
@@ -113,10 +121,10 @@ def main():
 			# Write Test Cases to files
 			for tc, inp, ans in zip(range(1, len(inputs) + 1), inputs, answers):
 				with open(F"{dir_tests}/{tc}.in", "w") as inp_file, open(F"{dir_tests}/{tc}.ans", "w") as ans_file:
-					# Only Write Test Case to file if it's not truncated					truncate_length = 400
+					# Only Write Test Case to file if it's not truncated
 					truncate_length = 400
 					truncated = (len(inp) > truncate_length and inp[-3:] == "...") or (len(ans) > truncate_length and ans[-3:] == "...")
-					
+
 					if truncated:
 						print(F"\t-- WARNING: Test Case # {tc} is truncated")
 					
@@ -125,7 +133,7 @@ def main():
 						ans_file.write(ans)
 						written_count += 1
 			
-			print(F"\t-- Written {written_count}/{len(inputs)} Test Cases ({len(inputs) - written_count} were Truncated, thus not written)")
+			print(F"\t-- Written {written_count}/{len(inputs)} Test Cases ({len(inputs) - written_count} were Truncated)")
 
 			# Enlist file paths to be zipped
 			files_to_zip = retrieve_file_paths(dir_top_level)
