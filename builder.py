@@ -1,3 +1,4 @@
+# Import OS modules
 import os
 import re
 import csv
@@ -138,6 +139,15 @@ def main():
 			# Enlist file paths to be zipped
 			files_to_zip = retrieve_file_paths(dir_top_level)
 			
+			# Create directory to store the resulting zip files in
+			dir_path = "./Problems"
+
+			if not os.path.exists(dir_path):
+				print( "Creating folder")
+				os.mkdir(dir_path)
+	
+			problem_id = dir_path + "/" + problem_id
+
 			# Zip files into a problem package
 			with zipfile.ZipFile(problem_id + ".zip", "w") as zip_file:
 				for file in files_to_zip:
