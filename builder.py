@@ -88,7 +88,7 @@ def main():
 				for k, v in problem_desc.items():
 					desc_file.write(F"{k} = {v}\n")
 			
-			print( "\t-- Written domjudge-problem.ini")
+			print("\t-- Written domjudge-problem.ini")
 			
 			# Create Directory for Test Cases
 			dir_tests = F"{dir_top_level}/data/secret"
@@ -100,13 +100,13 @@ def main():
 
 			# Fetch submission data from Codeforces
 			ac_source, inputs, answers = cf_service.get_submission(submission_id)
-			print( "\t-- Fetched Submission Details")
+			print("\t-- Fetched Submission Details")
 
 			# Write AC Solution to file
 			with open(dir_sol + "/sol.cpp", "w") as sol_file:
 				sol_file.write(ac_source)
 			
-			print( "\t-- Written sol.cpp")
+			print("\t-- Written sol.cpp")
 
 			written_count = 0
 
@@ -140,9 +140,9 @@ def main():
 			# Remove temporary directory
 			shutil.rmtree(dir_top_level)
 
-			print( "\t-- Cleaned Temporary Files")
+			print("\t-- Cleaned Temporary Files")
 
-			print( "\n\tProblem Package Created\n")
+			print("\n\tProblem Package Created\n")
 
 
 if __name__ == "__main__":
